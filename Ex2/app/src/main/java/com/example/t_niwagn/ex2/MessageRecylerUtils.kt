@@ -20,7 +20,7 @@ class MessageRecylerUtils {
 
         init {
             v.setOnClickListener(this)
-            this.mMessageText = v.findViewById(R.id.message_text2)
+            this.mMessageText = v.findViewById(R.id.message_text)
             this.mLayout = v.findViewById(R.id.message_id)
         }
 
