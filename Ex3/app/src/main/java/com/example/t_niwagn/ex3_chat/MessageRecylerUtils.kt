@@ -21,6 +21,10 @@ class MessageRecylerUtils {
         fun bind(message: Message, callback: MessageHolderCallback) {
             mMessage.text = message.mMessageText
             mMessage.setTextColor(Color.parseColor("#4c4c4c"))
+            createAlertDialog(v, message, callback)
+        }
+
+        private fun createAlertDialog(v: View, message: Message, callback: MessageHolderCallback) {
             v.setOnLongClickListener(View.OnLongClickListener {
                 val adb = AlertDialog.Builder(v.context)
                 adb.setTitle("Delete?")
@@ -61,7 +65,6 @@ class MessageRecylerUtils {
                     mMessages?.remove(getItem(position))
                     notifyItemRemoved(position)
                     notifyItemRangeChanged(position, mMessages!!.size)
-                    //notifyDataSetChanged()
                 }
             })
         }

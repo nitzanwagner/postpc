@@ -22,13 +22,11 @@ class MainActivity : AppCompatActivity() {
 
     private val SP_MESSAGES_LIST = "Messages"
     private val SP_LIST_LENGTH = "NumberOfMessages"
-    private val RECYCLER_VIEW_ITEMS = "RecyclerViewItems" //todo maybe not need because sp
     private val EDIT_TEXT = "EditTextInput"
 
 
     private lateinit var mUserInput : EditText
     private lateinit var mUserButton : Button
-    //private var mMessagesList : ArrayList<Message>? = ArrayList()
     private var mAdapter = MessageRecylerUtils.MessageAdapter()
     private lateinit var mRecyclerView : RecyclerView
     private lateinit var mSharedPreferences : SharedPreferences
@@ -79,11 +77,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, "Please enter a valid message", Toast.LENGTH_SHORT).show()
                 hideKeyboard(mUserInput)
             } else {
-                //val cpyList = mMessagesList
                 mAdapter.addToList(Message(mUserInput.text.toString()))
-                //cpyList?.add(Message(mUserInput.text.toString()))
-                //mMessagesList = cpyList
-                //mAdapter.submitList(cpyList)
                 mUserInput.text.clear()
                 hideKeyboard(mUserInput)
                 saveListToSP(SP_MESSAGES_LIST)
