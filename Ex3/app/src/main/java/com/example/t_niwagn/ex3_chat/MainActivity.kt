@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
         prepareRecyclerViewChat()
         prepareEditTextUserInput()
@@ -86,18 +87,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun saveListToSP(key: String) {
-        val json = Gson().toJson(mAdapter.getList())
         val editor = mSharedPreferences.edit()
-        editor.putString(key, json).apply()
+        editor.putString(key, Gson().toJson(mAdapter.getList()) ?: "").apply()
     }
 
     private fun setAdapterListFromSP() {
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val messagesList : MutableList<Message> = Gson().fromJson(mSharedPreferences.getString(SP_MESSAGES_LIST, null))
-        mAdapter.submitList(messagesList)
+        val mType = object: TypeToken<MutableList<Message>>() {}.type
+        val messagesList = Gson().fromJson<MutableList<Message>>(mSharedPreferences.getString(SP_MESSAGES_LIST, ""), mType)
+        mAdapter.submitList(messagesList ?: ArrayList())
     }
 
-    private inline fun <reified T> Gson.fromJson(json: String?) = this.fromJson<T>(json, object: TypeToken<T>() {}.type)!!
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
