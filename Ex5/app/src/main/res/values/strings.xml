@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Chat_ex5</string>
+    <string name="enter_message">Enter a message here</string>
+    <string name="press_here">press here</string>
+    <string name="click_me">Click me</string>
+    <string name="hello_new_user">Hello new user!</string>
+    <string name="fill_name">Please fill in your name:</string>
+    <string name="my_name_is">Your name here</string>
+    <string name="this_is_my_name">This is my name</string>
+    <string name="skip">skip</string>
+    <string name="hello_user">Hello %1$s!</string>
+</resources>
