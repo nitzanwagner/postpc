@@ -6,7 +6,7 @@
 
     <TextView android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:text="@string/details"
+              android:text="@string/messages_details"
               android:gravity="center_horizontal"
               android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
               android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"

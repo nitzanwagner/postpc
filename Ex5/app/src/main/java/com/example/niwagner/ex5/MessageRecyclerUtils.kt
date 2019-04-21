@@ -1,7 +1,6 @@
 package com.example.niwagner.ex5
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.support.v7.recyclerview.extensions.ListAdapter
@@ -11,9 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.support.v7.app.AlertDialog
-import android.util.Log
-import com.google.firebase.firestore.FirebaseFirestore
 
 
 class MessageRecyclerUtils {
@@ -51,7 +47,6 @@ class MessageRecyclerUtils {
 
         override fun onBindViewHolder(holder: MessageHolder, position: Int) {
             holder.bind(getItem(position))
-
             holder.itemView.setOnLongClickListener(View.OnLongClickListener {
                 val curMessage = getItem(position)
                 val intentMessageDetails = Intent(mContext, MessageDetailsActivity::class.java)
@@ -72,18 +67,6 @@ class MessageRecyclerUtils {
             notifyItemRangeChanged(position, mMessages!!.size)
         }
 
-
-        private fun deleteMessageFromRemoteDB(message: Message) {
-            val db = FirebaseFirestore.getInstance()
-            db.collection("messages").document(message.mId).delete()
-                .addOnSuccessListener {
-                    Log.d("TAG", "Message document with ID: ${message.mId} was deleted successfully")
-                }
-                .addOnFailureListener { e ->
-                    Log.w("TAG", "Error deleting message document", e)
-                }
-        }
-
         override fun submitList(list: MutableList<Message>?) {
             super.submitList(list)
             mMessages = list
@@ -97,10 +80,5 @@ class MessageRecyclerUtils {
         fun getList(): MutableList<Message>? {
             return mMessages
         }
-
-    }
-
-    interface MessageHolderCallback {
-        fun itemWasClickedToDelete(position: Int)
     }
 }

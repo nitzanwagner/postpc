@@ -64,7 +64,6 @@ class MainActivity : AppCompatActivity() {
         if (!mSharedPreferences.getBoolean(NOT_FIRST_LAUNCH, false)) {
             setAdapterListFromRemoteDB()
             mSharedPreferences.edit().putBoolean(NOT_FIRST_LAUNCH, true).apply()
-            mPhoneId = UUID.randomUUID().toString()
         } else {
             setAdapterListFromSP()
         }
@@ -176,7 +175,6 @@ class MainActivity : AppCompatActivity() {
                     deleteMessageFromRemoteDB(data.getStringExtra("id"))
                     mAdapter.deleteMessage(data.getIntExtra("position", 0))
                 }
-
             }
         }
     }
@@ -198,5 +196,4 @@ class MainActivity : AppCompatActivity() {
         val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
-
 }

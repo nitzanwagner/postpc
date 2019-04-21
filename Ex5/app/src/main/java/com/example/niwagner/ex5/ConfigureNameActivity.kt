@@ -29,7 +29,7 @@ class SignInActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.sign_in)
+        setContentView(R.layout.configure_name)
 
         mProgressBar = CustomProgressBar()
         mProgressBar.show(this)
@@ -66,9 +66,7 @@ class SignInActivity : AppCompatActivity() {
 
     private fun prepareSkipButton() {
         this.mSkipButton = findViewById(R.id.button_skip)
-        mSkipButton.setOnClickListener {
-            goToMainActivity()
-        }
+        mSkipButton.setOnClickListener { goToMainActivity() }
     }
 
     private fun prepareEditTextUserInput() {

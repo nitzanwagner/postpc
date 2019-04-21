@@ -9,9 +9,9 @@
     <string name="this_is_my_name">This is my name</string>
     <string name="skip">skip</string>
     <string name="hello_user">Hello %1$s!</string>
-    <string name="message"><b>Message</b>: %1$s</string>
+    <string name="message_text_info"><b>Message</b>: %1$s</string>
     <string name="timestamp"><b>Timestamp</b>: %1$s</string>
     <string name="phone_num"><b>Sending phone:</b> %1$s</string>
-    <string name="details"><b>Message Details</b></string>
+    <string name="messages_details"><b>Message Details</b></string>
     <string name="permanent_delete">PERMANENT DELETE</string>
 </resources>

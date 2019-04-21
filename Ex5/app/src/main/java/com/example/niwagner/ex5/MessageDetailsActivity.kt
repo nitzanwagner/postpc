@@ -2,14 +2,10 @@ package com.example.niwagner.ex5
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import com.google.firebase.firestore.FirebaseFirestore
 import android.app.Activity
 import android.content.Intent
-import org.w3c.dom.Text
 
 
 class MessageDetailsActivity : AppCompatActivity() {
@@ -27,7 +23,7 @@ class MessageDetailsActivity : AppCompatActivity() {
         mTimestamp = findViewById(R.id.timestamp)
         mPhoneNum = findViewById(R.id.phone)
 
-        mMessageText.text = getString(R.string.message, intent.getStringExtra("text"))
+        mMessageText.text = getString(R.string.message_text_info, intent.getStringExtra("text"))
         mTimestamp.text = getString(R.string.timestamp, intent.getStringExtra("timestamp"))
         mPhoneNum.text = getString(R.string.phone_num, intent.getStringExtra("phone"))
 
