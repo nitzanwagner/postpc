@@ -20,7 +20,6 @@ import android.widget.Toast
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
@@ -30,14 +29,16 @@ class MainActivity : AppCompatActivity() {
     private val SP_MESSAGES_LIST = "Messages"
     private val SP_LIST_LENGTH = "NumberOfMessages"
     private val EDIT_TEXT = "EditTextInput"
+    private val PHONE_ID = "PhoneId"
     private val NOT_FIRST_LAUNCH = "FirstLaunch"
 
     private lateinit var mUserNameTextView: TextView
     private lateinit var mUserInput: EditText
     private lateinit var mUserButton: Button
-    private var mAdapter = MessageRecyclerUtils.MessageAdapter()
+    private var mAdapter = MessageRecyclerUtils.MessageAdapter(this)
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mSharedPreferences: SharedPreferences
+    private lateinit var mPhoneId : String
     private var mExecutor = Executors.newSingleThreadExecutor()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +46,6 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-
 
         mUserNameTextView = findViewById(R.id.user_name)
         FirebaseFirestore.getInstance().collection("defaults").document("user").get()
@@ -60,9 +60,11 @@ class MainActivity : AppCompatActivity() {
         prepareEditTextUserInput()
         prepareButtonSend()
 
+        mPhoneId = mSharedPreferences.getString(PHONE_ID, UUID.randomUUID().toString())
         if (!mSharedPreferences.getBoolean(NOT_FIRST_LAUNCH, false)) {
             setAdapterListFromRemoteDB()
             mSharedPreferences.edit().putBoolean(NOT_FIRST_LAUNCH, true).apply()
+            mPhoneId = UUID.randomUUID().toString()
         } else {
             setAdapterListFromSP()
         }
@@ -103,7 +105,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, "Please enter a valid message", Toast.LENGTH_SHORT).show()
                 hideKeyboard(mUserInput)
             } else {
-                val message = Message(mUserInput.text.toString(), Date(), UUID.randomUUID().toString())
+                val message = Message(mUserInput.text.toString(), Date(), UUID.randomUUID().toString(), mPhoneId)
                 mAdapter.addToList(message)
                 mUserInput.text.clear()
                 hideKeyboard(mUserInput)
@@ -153,14 +155,28 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
+    private fun deleteMessageFromRemoteDB(messageId: String) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("messages").document(messageId).delete()
+            .addOnSuccessListener {
+                Log.d("TAG", "Message document with ID: $messageId was deleted successfully")
+            }
+            .addOnFailureListener { e ->
+                Log.w("TAG", "Error deleting message document", e)
+            }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         mUserNameTextView = findViewById(R.id.user_name)
         if (requestCode == 1) {
             if (resultCode == Activity.RESULT_OK) {
-                val returnString = data!!.getStringExtra("keyName")
-                mUserNameTextView.text = getString(R.string.hello_user, returnString)
+                if(data!!.getBooleanExtra("delete", false)) {
+                    deleteMessageFromRemoteDB(data.getStringExtra("id"))
+                    mAdapter.deleteMessage(data.getIntExtra("position", 0))
+                }
+
             }
         }
     }

@@ -94,13 +94,10 @@ class SignInActivity : AppCompatActivity() {
             }
 
             fun setTextView(s: CharSequence) {
-                //this.runOnUiThread(Runnable { mLayoutLights.setVisibility(View.VISIBLE) })
                 if (s.isBlank()) {
                     runOnUiThread{ mButtonName.visibility = View.GONE }
                 } else {
                     runOnUiThread{ mButtonName.visibility = View.VISIBLE }
-                    //mButtonName.visibility = View.VISIBLE
-                    //mButtonName.bringToFront()
                 }
             }
         })
@@ -124,7 +121,7 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun goToMainActivity() {
-        intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, MainActivity::class.java)
         mProgressBar.dialog?.dismiss()
         startActivity(intent)
         finish()

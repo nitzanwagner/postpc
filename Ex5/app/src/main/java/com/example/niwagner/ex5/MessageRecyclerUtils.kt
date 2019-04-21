@@ -1,5 +1,8 @@
 package com.example.niwagner.ex5
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.util.DiffUtil
@@ -19,40 +22,26 @@ class MessageRecyclerUtils {
 
         private var mMessage: TextView = v.findViewById(R.id.message_text)
 
-        fun bind(message: Message, callback: MessageHolderCallback) {
+        fun bind(message: Message) {
             mMessage.text = message.mText
             mMessage.setTextColor(Color.parseColor("#4c4c4c"))
-            createAlertDialog(v, message, callback)
         }
 
-        private fun createAlertDialog(v: View, message: Message, callback: MessageHolderCallback) {
-            v.setOnLongClickListener(View.OnLongClickListener {
-                val adb = AlertDialog.Builder(v.context)
-                adb.setTitle("Delete?")
-                adb.setMessage("Are you sure you want to delete ${message.mText}?")
-                adb.setNegativeButton("Cancel", null)
-                    .setPositiveButton("Delete") { _, _ -> callback.itemWasClickedToDelete(adapterPosition) }
-                    .setCancelable(false)
-                    .show()
+        class MessageCallback : DiffUtil.ItemCallback<Message>() {
+            override fun areItemsTheSame(p0: Message, p1: Message): Boolean {
+                return p0 == p1
+            }
 
-                return@OnLongClickListener true
-            })
+            override fun areContentsTheSame(p0: Message, p1: Message): Boolean {
+                return p0.mText == p1.mText
+            }
         }
     }
 
-    class MessageCallback : DiffUtil.ItemCallback<Message>() {
-        override fun areItemsTheSame(p0: Message, p1: Message): Boolean {
-            return p0 == p1
-        }
-
-        override fun areContentsTheSame(p0: Message, p1: Message): Boolean {
-            return p0.mText == p1.mText
-        }
-    }
-
-    class MessageAdapter : ListAdapter<Message, MessageHolder>(MessageCallback()) {
+    class MessageAdapter(context: Activity) : ListAdapter<Message, MessageHolder>(MessageHolder.MessageCallback()) {
 
         private var mMessages: MutableList<Message>? = ArrayList<Message>()
+        private val mContext = context
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageHolder {
             return MessageHolder(
@@ -61,15 +50,28 @@ class MessageRecyclerUtils {
         }
 
         override fun onBindViewHolder(holder: MessageHolder, position: Int) {
-            holder.bind(getItem(position), object : MessageHolderCallback {
-                override fun itemWasClickedToDelete(position: Int) {
-                    deleteMessageFromRemoteDB(getItem(position))
-                    mMessages?.remove(getItem(position))
-                    notifyItemRemoved(position)
-                    notifyItemRangeChanged(position, mMessages!!.size)
-                }
+            holder.bind(getItem(position))
+
+            holder.itemView.setOnLongClickListener(View.OnLongClickListener {
+                val curMessage = getItem(position)
+                val intentMessageDetails = Intent(mContext, MessageDetailsActivity::class.java)
+                    .putExtra("position", position)
+                    .putExtra("text", curMessage.mText)
+                    .putExtra("id", curMessage.mId)
+                    .putExtra("phone", curMessage.mPhoneId)
+                    .putExtra("timestamp", curMessage.mTimestamp.toString())
+                mContext.startActivityForResult(intentMessageDetails, 1)
+
+                return@OnLongClickListener true
             })
         }
+
+        fun deleteMessage(position: Int) {
+            mMessages?.remove(getItem(position))
+            notifyItemRemoved(position)
+            notifyItemRangeChanged(position, mMessages!!.size)
+        }
+
 
         private fun deleteMessageFromRemoteDB(message: Message) {
             val db = FirebaseFirestore.getInstance()
@@ -80,7 +82,6 @@ class MessageRecyclerUtils {
                 .addOnFailureListener { e ->
                     Log.w("TAG", "Error deleting message document", e)
                 }
-
         }
 
         override fun submitList(list: MutableList<Message>?) {

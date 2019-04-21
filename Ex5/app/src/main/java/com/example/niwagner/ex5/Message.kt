@@ -4,7 +4,8 @@ import com.google.firebase.firestore.IgnoreExtraProperties
 import java.util.*
 
 @IgnoreExtraProperties
-class Message(var mText: String = "", var mTimestamp: Date = Date(), var mId: String = "") : Comparable<Message> {
+class Message(var mText: String = "", var mTimestamp: Date = Date(), var mId: String = "", var mPhoneId: String = "")
+    : Comparable<Message> {
 
     override fun compareTo(other: Message): Int {
         return this.mTimestamp.compareTo(other.mTimestamp)
