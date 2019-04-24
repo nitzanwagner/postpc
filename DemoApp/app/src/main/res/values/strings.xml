@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">DemoApp</string>
+    <string name="go_fish">go fish!</string>
+    <string name="tap_on_me">tap on me!</string>
+    <string name="enter_digits">Enter 5 digits</string>
+    <string name="numbers_entered">You have entered: %1$s</string>
+</resources>
