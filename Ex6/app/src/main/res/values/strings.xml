@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Ex6</string>
+    <string name="enter_phone_number">Enter phone number</string>
+    <string name="enter_message">I\'m going to call this number:</string>
+    <string name="missing_info">Please complete all fields in order to continue</string>
+    <string name="ready_sms">Ready to send SMS messages</string>
+    <string name="goto_settings">Go to settings and enable permissions</string>
+    <string name="message">Message: </string>
+    <string name="To">To:</string>
+</resources>
