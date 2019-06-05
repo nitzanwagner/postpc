@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Ex8</string>
+    <string name="username">Enter username</string>
+    <string name="submit_button">Submit</string>
+    <string name="welcome_back">Welcome back, %1$s</string>
+    <string name="change_pretty_name">Change pretty name</string>
+    <string name="enter_pretty_name_here">Enter pretty name here</string>
+    <string name="unicorn_button">unicorn</string>
+    <string name="alien_button">alien</string>
+    <string name="crab_button">crab</string>
+    <string name="octopus_button">octopus</string>
+    <string name="frog_button">frog</string>
+    <string name="robot_button">robot</string>
+</resources>
