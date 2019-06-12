@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">PostIt</string>
+    <string name="post_it">Post it</string>
+    <string name="plane_finding">Searching for surfaces&#8230;</string>
+    <string name="enter_title">Enter title</string>
+    <string name="close">close</string>
+    <string name="finish">finish</string>
+</resources>
