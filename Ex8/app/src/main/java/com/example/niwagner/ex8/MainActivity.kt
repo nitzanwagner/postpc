@@ -12,16 +12,13 @@ import org.json.JSONObject
 import java.io.IOException
 import okhttp3.RequestBody
 import org.json.JSONException
-import android.R.attr.password
-
-
-
+import android.app.Activity
+import android.view.inputmethod.InputMethodManager
 
 
 class MainActivity : AppCompatActivity() {
 
-    //private val url = "http://hujipostpc2019.pythonanywhere.com"
-    private val url = "http://172.29.97.84:5678"
+    private val url = "http://hujipostpc2019.pythonanywhere.com"
     private val client = OkHttpClient()
     private lateinit var mUserToken : String
     private lateinit var mUsername : String
@@ -53,7 +50,21 @@ class MainActivity : AppCompatActivity() {
         mUserToken = intent.getStringExtra("TOKEN")
 
         getUserInfo("$url/user")
-        setUpdatePrettyNameUIElements()
+    }
+
+    private fun setInitialUIElements() {
+        mProgressBar = findViewById(R.id.progress_bar)
+        mWelcomeTextView = findViewById(R.id.welcome_textview)
+        mChangePrettyNameButton = findViewById(R.id.button_change_pretty_name)
+        mChangePrettyNameEditText = findViewById(R.id.change_pretty_name_edit_text)
+        mImageView = findViewById(R.id.profilePic)
+        mSubmitButton = findViewById(R.id.button_submit)
+        mProgressBar.visibility = View.VISIBLE
+        mWelcomeTextView.visibility = View.GONE
+        mChangePrettyNameButton.visibility = View.GONE
+        mChangePrettyNameEditText.visibility = View.GONE
+        mSubmitButton.visibility = View.GONE
+        mImageView.visibility = View.GONE
     }
 
     private fun getUserInfo(url: String) {
@@ -96,10 +107,13 @@ class MainActivity : AppCompatActivity() {
         mSubmitButton.setOnClickListener {
             if (mChangePrettyNameEditText.text.toString().matches("[a-zA-Z0-9]+".toRegex())) {
                 mPrettyName = mChangePrettyNameEditText.text.toString()
-                runUpdateInfo("$url/user/edit/")
+                runUpdateInfo()
                 mChangePrettyNameButton.visibility = View.VISIBLE
                 mChangePrettyNameEditText.visibility = View.GONE
                 mSubmitButton.visibility = View.GONE
+                mChangePrettyNameEditText.text.clear()
+                hideKeyboard(mSubmitButton)
+
             } else {
                 Toast.makeText(this, "Please enter a valid pretty name", Toast.LENGTH_SHORT).show()
             }
@@ -147,21 +161,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun runUpdateInfo(url: String) {
-        val JSON = MediaType.parse("application/json; charset=utf-8")
+    private fun update(itemName: String, itemValue: String, callback: Callback) {
+        val JSON = MediaType.parse("application/json")
         val postdata = JSONObject()
         try {
-            postdata.put("pretty_name", mPrettyName)
+            postdata.put(itemName, itemValue)
         } catch (e: JSONException) {
             e.printStackTrace()
         }
 
-        val body = RequestBody.create(JSON,  postdata.toString())
-        val request = Request.Builder().url(url).post(body)
+        val body = RequestBody.create(JSON,  postdata.toString().toByteArray(Charsets.US_ASCII))
+        val request = Request.Builder().url("$url/user/edit/").post(body)
             .header("Authorization", "token $mUserToken")
             .header("Content-Type", "application/json")
             .build()
-        client.newCall(request).enqueue(object : Callback {
+        client.newCall(request).enqueue(callback)
+    }
+
+    private fun runUpdateInfo() {
+        update("pretty_name", mPrettyName, object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread {
                     Toast.makeText(this@MainActivity, "Something went wrong. Please try again later", Toast.LENGTH_LONG)
@@ -172,25 +190,14 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call, response: Response) {
                 val res = response.body()?.string()
                 val jsonObject = JSONObject(res)
-                mUserToken = jsonObject.getString("data")
+                mPrettyName = (jsonObject.get("data") as JSONObject).getString("pretty_name")
+                mWelcomeTextView.text = getString(R.string.welcome_back, mPrettyName)
             }
         })
     }
 
     private fun runUpdateImage() {
-        val JSON = MediaType.parse("application/json")
-        val postdata = JSONObject()
-        try { postdata.put("image_url", mImageUrl)
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-        val body = RequestBody.create(JSON,  postdata.toString())
-        val request = Request.Builder().url("$url/user/edit").post(body)
-            .header("Accept", "application/json")
-            .header("Authorization", "token $mUserToken")
-            .header("Content-Type", "application/json")
-            .build()
-        client.newCall(request).enqueue(object : Callback {
+        update("image_url", mImageUrl, object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread {
                     Toast.makeText(this@MainActivity, "Something went wrong. Please try again later", Toast.LENGTH_LONG)
@@ -199,26 +206,16 @@ class MainActivity : AppCompatActivity() {
             }
             override fun onResponse(call: Call, response: Response) {
                 runOnUiThread {
+                    val res = response.body()?.string()
+                    val jsonObject = JSONObject(res)
+                    mImageUrl = (jsonObject.get("data") as JSONObject).getString("image_url")
                     Picasso.with(this@MainActivity).load("$url$mImageUrl").into(mImageView) }
             }
         })
     }
-    private fun setUpdatePrettyNameUIElements() {
 
-    }
-
-    private fun setInitialUIElements() {
-        mProgressBar = findViewById(R.id.progress_bar)
-        mWelcomeTextView = findViewById(R.id.welcome_textview)
-        mChangePrettyNameButton = findViewById(R.id.button_change_pretty_name)
-        mChangePrettyNameEditText = findViewById(R.id.change_pretty_name_edit_text)
-        mImageView = findViewById(R.id.profilePic)
-        mSubmitButton = findViewById(R.id.button_submit)
-        mProgressBar.visibility = View.VISIBLE
-        mWelcomeTextView.visibility = View.GONE
-        mChangePrettyNameButton.visibility = View.GONE
-        mChangePrettyNameEditText.visibility = View.GONE
-        mSubmitButton.visibility = View.GONE
-        mImageView.visibility = View.GONE
+    private fun hideKeyboard(view: View) {
+        val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }

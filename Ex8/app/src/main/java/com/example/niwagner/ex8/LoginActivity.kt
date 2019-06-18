@@ -7,9 +7,8 @@ import android.net.ConnectivityManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import com.airbnb.lottie.LottieAnimationView
 import okhttp3.*
 import org.json.JSONObject
@@ -18,11 +17,11 @@ import java.io.IOException
 
 class LoginActivity : AppCompatActivity() {
 
-    //private val url = "http://hujipostpc2019.pythonanywhere.com"
-    private val url = "http://172.29.97.84:5678"
+    private val url = "http://hujipostpc2019.pythonanywhere.com"
     private val client = OkHttpClient()
     private lateinit var mUserToken : String
-    private lateinit var mAnimationView : LottieAnimationView
+    private lateinit var mCheckMark : ImageView
+    private lateinit var mConnectionText : TextView
     private lateinit var mSharedPreferences : SharedPreferences
     private lateinit var mUsernameEditText : EditText
     private lateinit var mButton : Button
@@ -30,11 +29,15 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.login_activity)
+        mCheckMark = findViewById(R.id.checkmark)
+        mConnectionText = findViewById(R.id.connected)
 
-        mAnimationView = findViewById(R.id.animation)
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        mCheckMark.visibility = View.GONE
+        mConnectionText.visibility = View.GONE
 
         runCheckConnection(url)
+
         if (mSharedPreferences.getString("USERNAME", "")!!.isEmpty()) {
             askForUsername()
         } else {
@@ -55,12 +58,6 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun isNetworkConnected(): Boolean {
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = connectivityManager.activeNetworkInfo
-        return networkInfo != null && networkInfo.isConnected
-    }
-
     private fun runCheckConnection(url: String) {
         val request = Request.Builder().url(url).build()
         client.newCall(request).enqueue(object : Callback {
@@ -73,10 +70,8 @@ class LoginActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call, response: Response) {
                 runOnUiThread {
-                    mAnimationView.setAnimation("success-animation.json")
-                    mAnimationView.playAnimation()
-                    mAnimationView.clearAnimation()
-                    //mAnimationView.cancelAnimation()
+                    mCheckMark.visibility = View.VISIBLE
+                    mConnectionText.visibility = View.VISIBLE
                 }
             }
         })

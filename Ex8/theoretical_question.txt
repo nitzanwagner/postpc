@@ -1,0 +1,19 @@
+Theoretical question:
+
+Save the token locally:
+
+Cons: 
+ 1. Never changing the credentials will result in the app becoming less secure.
+ 
+Pros:
+ 1. Quicker than each time accessing the server.
+ 
+Using this token only in this current app launch, and re-request a token from the server each time the app launches again:
+
+Cons:
+ 1. The pro of the previous option is in fact the con of this approach. Re-requesting the 
+ token on every launch may be time consuming.
+
+Pros:
+ 1. As before, the con of the previous option becomes a pro. The app is more secure since
+ a hacker needs to "guess" the token upon every app launch.

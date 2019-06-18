@@ -11,4 +11,5 @@
     <string name="octopus_button">octopus</string>
     <string name="frog_button">frog</string>
     <string name="robot_button">robot</string>
+    <string name="connection_succeed">Connection to server succeed</string>
 </resources>
